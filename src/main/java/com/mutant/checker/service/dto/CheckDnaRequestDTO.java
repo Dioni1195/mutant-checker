@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CheckDnaRequestDTO {
-    private List<String> dna;
+    private String[] dna;
 }
