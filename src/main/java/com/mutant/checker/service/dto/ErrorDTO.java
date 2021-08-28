@@ -19,7 +19,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ErrorDTO implements Serializable {
 
-    private static final long serialVersionUID = 7511943652435775490L;
+    private static final long serialVersionUID = 1L;
 
     private Integer idError;
     private String descError;
