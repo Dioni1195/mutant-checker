@@ -23,7 +23,7 @@ public class DnaController {
         this.dnaService = dnaService;
     }
 
-    @GetMapping
+    @PostMapping("/mutant")
     public ResponseEntity<Boolean> checkDNA(@RequestBody CheckDnaRequestDTO dto){
         return new ResponseEntity<>(dnaService.isMutant(dto.getDna()), HttpStatus.OK);
     }
