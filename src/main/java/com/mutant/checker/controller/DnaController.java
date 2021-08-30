@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author <a>Dionisio Arango</a>
  * @project mutant-checker
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping
+@RequestMapping("/mutant")
 public class DnaController {
 
     private final DnaService dnaService;
@@ -25,12 +27,12 @@ public class DnaController {
         this.dnaService = dnaService;
     }
 
-    @PostMapping("/mutant")
-    public ResponseEntity<Boolean> checkDNA(@RequestBody CheckDnaRequestDTO dto) throws JsonProcessingException {
+    @PostMapping("/")
+    public ResponseEntity<Boolean> checkDNA(@Valid @RequestBody CheckDnaRequestDTO dto) throws JsonProcessingException {
         return new ResponseEntity<>(dnaService.isMutant(dto.getDna()), HttpStatus.OK);
     }
     
-    @GetMapping("/mutant/stats")
+    @GetMapping("/stats")
     public ResponseEntity<StatsResponseDTO> stats() {
         return new ResponseEntity<>(dnaService.stats(), HttpStatus.OK);
     }

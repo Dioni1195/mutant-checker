@@ -12,7 +12,7 @@ public final class ServiceErrorCodes {
 
     public static final String ERROR_TAMANO_MINIMO = "El numero minimo de filas debe ser 4";
     public static final Integer ERROR_TAMANO_MINIMO_CODE = 10400;
-    public static final String ERROR_MATRIZ_NO_CUADRADA = "La matriz debe ser cuadrada, la fila es %d tiene un tamano %d";
+    public static final String ERROR_MATRIZ_NO_CUADRADA = "La matriz debe ser cuadrada";
     public static final Integer ERROR_MATRIZ_NO_CUADRADA_CODE = 10401;
     public static final String ERROR_NO_MUTANTE = "El ADN es de humano";
     public static final Integer ERROR_NO_MUTANTE_CODE = 10402;
