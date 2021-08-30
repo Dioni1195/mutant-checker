@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "org.sonarqube" version "3.3"
 }
 
 group = 'com.mutant'
@@ -24,6 +25,14 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectKey", "Dioni1195_mutant-checker"
+		property "sonar.organization", "dioni1195"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
 }
 
 test {
