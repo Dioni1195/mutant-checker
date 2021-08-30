@@ -1,5 +1,6 @@
 package com.mutant.checker.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mutant.checker.service.DnaService;
 import com.mutant.checker.service.dto.CheckDnaRequestDTO;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class DnaController {
     }
 
     @PostMapping("/mutant")
-    public ResponseEntity<Boolean> checkDNA(@RequestBody CheckDnaRequestDTO dto){
+    public ResponseEntity<Boolean> checkDNA(@RequestBody CheckDnaRequestDTO dto) throws JsonProcessingException {
         return new ResponseEntity<>(dnaService.isMutant(dto.getDna()), HttpStatus.OK);
     }
  }

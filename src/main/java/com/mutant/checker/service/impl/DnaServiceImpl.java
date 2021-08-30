@@ -1,15 +1,21 @@
 package com.mutant.checker.service.impl;
 
-import com.mutant.checker.config.MCError;
-import com.mutant.checker.config.MCRuntimeException;
-import com.mutant.checker.config.NoMutantException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mutant.checker.AdnRepository;
+import com.mutant.checker.config.exception.MCError;
+import com.mutant.checker.config.exception.MCRuntimeException;
+import com.mutant.checker.config.exception.NoMutantException;
 import com.mutant.checker.service.DnaService;
+import com.mutant.checker.service.dto.AdnRecord;
 import com.mutant.checker.service.dto.ErrorDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.mutant.checker.config.exception.errorcodes.ServiceErrorCodes.*;
@@ -23,9 +29,15 @@ import static com.mutant.checker.config.exception.errorcodes.ServiceErrorCodes.*
 @Service
 @Slf4j
 public class DnaServiceImpl implements DnaService {
+    private final AdnRepository adnRepository;
+    private static final ObjectMapper mapper = new ObjectMapper();
+    
+    DnaServiceImpl(AdnRepository adnRepository){
+        this.adnRepository = adnRepository;
+    }
 
     @Override
-    public boolean isMutant(String[] dna) {
+    public boolean isMutant(String[] dna) throws JsonProcessingException {
         List<Boolean> resultList = new ArrayList<>();
         
         if(dna.length < 4) {
@@ -50,6 +62,7 @@ public class DnaServiceImpl implements DnaService {
             int length = dna.length;
             for (int j = 0; j < length; j++) {
                 if (resultList.size() == 2) {
+                    saveRecord(buildAdnRecord(dna, true));
                     return true;
                 }
                 
@@ -103,7 +116,31 @@ public class DnaServiceImpl implements DnaService {
                 
             }
         }
-        
+    
+        saveRecord(buildAdnRecord(dna, false));
         throw new NoMutantException(ERROR_NO_MUTANTE);
+    }
+    
+    private void saveRecord(AdnRecord adnRecord) {
+        try {
+            adnRepository.save(adnRecord);
+        } catch (DuplicateKeyException ex) {
+            throw new MCRuntimeException(new MCError(
+                    HttpStatus.BAD_REQUEST, new ErrorDTO(
+                    ERROR_ADN_ALREADY_CHECKED_CODE,
+                    String.format(ERROR_ADN_ALREADY_CHECKED, adnRecord.getResult()),
+                    TYPE_E
+            )));
+        }
+    }
+    
+    
+    private AdnRecord buildAdnRecord(String[] adnMatrix, Boolean result) throws JsonProcessingException {
+        return AdnRecord.builder()
+                .adnMatrix(mapper.writeValueAsString(adnMatrix))
+                .result(result)
+                .createdAt(new Date())
+                .modifiedAt(new Date())
+                .build();
     }
 }

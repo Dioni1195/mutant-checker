@@ -1,4 +1,4 @@
-package com.mutant.checker.config;
+package com.mutant.checker.config.exception;
 
 import com.mutant.checker.service.dto.ErrorDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +18,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static com.mutant.checker.config.exception.errorcodes.ServiceErrorCodes.TYPE_E;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -61,7 +58,7 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
 
 	@ExceptionHandler(MCRuntimeException.class)
 	protected ResponseEntity<Object> handleMCRuntimeException(MCRuntimeException ex) {
-		log.error(ex.getLocalizedMessage());
+		log.error(ex.getMCError().getErrorDTO().getDescError());
 		return buildResponseEntity(ex.getMCError());
 	}
 	

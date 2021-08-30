@@ -1,4 +1,4 @@
-package com.mutant.checker.config;
+package com.mutant.checker.config.exception;
 
 import com.mutant.checker.service.dto.ErrorDTO;
 import lombok.AllArgsConstructor;
