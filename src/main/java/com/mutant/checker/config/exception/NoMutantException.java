@@ -1,4 +1,4 @@
-package com.mutant.checker.config;
+package com.mutant.checker.config.exception;
 
 public class NoMutantException extends RuntimeException{
 	private static final long serialVersionUID = 1L;

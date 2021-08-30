@@ -1,7 +1,7 @@
 package com.mutant.checker.service;
 
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface DnaService {
-    boolean isMutant(String[] dna);
+    boolean isMutant(String[] dna) throws JsonProcessingException;
 }
