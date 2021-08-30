@@ -9,6 +9,7 @@ import com.mutant.checker.config.exception.NoMutantException;
 import com.mutant.checker.service.DnaService;
 import com.mutant.checker.service.dto.AdnRecord;
 import com.mutant.checker.service.dto.ErrorDTO;
+import com.mutant.checker.service.dto.StatsResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -119,6 +120,17 @@ public class DnaServiceImpl implements DnaService {
     
         saveRecord(buildAdnRecord(dna, false));
         throw new NoMutantException(ERROR_NO_MUTANTE);
+    }
+    
+    @Override
+    public StatsResponseDTO stats() {
+        Integer mutantDna = adnRepository.countAdnRecordsByResultEquals(true);
+        Integer humanDna = adnRepository.countAdnRecordsByResultEquals(false);
+        return StatsResponseDTO.builder()
+                .count_mutant_dna(mutantDna)
+                .count_human_dna(humanDna)
+                .ratio(mutantDna.doubleValue()/humanDna.doubleValue())
+                .build();
     }
     
     private void saveRecord(AdnRecord adnRecord) {
