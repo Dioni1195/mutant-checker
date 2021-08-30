@@ -18,6 +18,8 @@ public final class ServiceErrorCodes {
     public static final Integer ERROR_NO_MUTANTE_CODE = 10402;
     public static final String ERROR_ADN_ALREADY_CHECKED = "La matriz de adn suministrada ya ha sido validada y el resultado es: %s";
     public static final Integer ERROR_ADN_ALREADY_CHECKED_CODE = 10403;
+    public static final String ERROR_SECUENCIA_ADN = "La secuencia contiene caracteres erroneos, deben ser (A,T,C,G) y es: %s";
+    public static final Integer ERROR_SECUENCIA_ADN_CODE = 10404;
     public static final String TYPE_E = "E";
 
     private ServiceErrorCodes() {

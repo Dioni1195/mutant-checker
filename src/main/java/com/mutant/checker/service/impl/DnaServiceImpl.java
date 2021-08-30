@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.mutant.checker.config.exception.errorcodes.ServiceErrorCodes.*;
 
@@ -32,6 +33,7 @@ import static com.mutant.checker.config.exception.errorcodes.ServiceErrorCodes.*
 public class DnaServiceImpl implements DnaService {
     private final AdnRepository adnRepository;
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String REGEX = "[ATCG]+";
     
     DnaServiceImpl(AdnRepository adnRepository){
         this.adnRepository = adnRepository;
@@ -41,6 +43,7 @@ public class DnaServiceImpl implements DnaService {
     public boolean isMutant(String[] dna) throws JsonProcessingException {
         List<Boolean> resultList = new ArrayList<>();
         
+        // El tamano minimo de la matriz debe ser 4x4 para poder cumplir con los parametros de minimo 4 letras iguales
         if(dna.length < 4) {
             throw new MCRuntimeException(new MCError(
                     HttpStatus.BAD_REQUEST, new ErrorDTO(
@@ -51,6 +54,8 @@ public class DnaServiceImpl implements DnaService {
         }
         
         for (int i = 0; i < dna.length; i++) {
+            
+            // La matriz debe ser cuadrada, se valida tamano de cada fila
             if(dna[i].length() != dna.length) {
                 throw new MCRuntimeException(new MCError(
                         HttpStatus.BAD_REQUEST, new ErrorDTO(
@@ -59,90 +64,129 @@ public class DnaServiceImpl implements DnaService {
                         TYPE_E
                 )));
             }
+            
+            // Se valida que la fila solo tenga los caracteres permitidos (A,T,C,G)
+            if (!dna[i].matches(REGEX)){
+                throw new MCRuntimeException(new MCError(
+                        HttpStatus.BAD_REQUEST, new ErrorDTO(
+                        ERROR_SECUENCIA_ADN_CODE,
+                        String.format(ERROR_SECUENCIA_ADN, dna[i]),
+                        TYPE_E
+                )));
+            }
 
             int length = dna.length;
             for (int j = 0; j < length; j++) {
+                // Si se cumple el requerimiento de minimo dos dos filas con 4 letras igual, se retorna el resultado positivo
                 if (resultList.size() == 2) {
                     saveRecord(buildAdnRecord(dna, true));
                     return true;
                 }
                 
-                if (j != length - 1) {
+                // Para hacer la validacion de igualdad horizontal, se asegura que la posicion actual no sea la ultima posicion de la fila
+                // Se valida que la posicion de la derecha sea igual a la actual
+                if ((j != length - 1) && (dna[i].charAt(j) == dna[i].charAt(j + 1))) {
                     
-                    if (dna[i].charAt(j) == dna[i].charAt(j + 1)) {
-                        if(j + 2 < length - 1) {
-                            if ((dna[i].charAt(j) == dna[i].charAt(j + 2)) && (dna[i].charAt(j) == dna[i].charAt(j + 3))){
+                    // Se valida que al menos existan tres posiciones mas a la derecha
+                    // Se decide dejar las siguiente validaciones separadas por legibilidad del codigo
+                    if(j + 2 < length - 1) {
+                        
+                        // Se completa la validacion horizontal hacia la derecha de 4 letras igual. (la actual, la siguiente y dos mas)
+                        if ((dna[i].charAt(j) == dna[i].charAt(j + 2)) && (dna[i].charAt(j) == dna[i].charAt(j + 3))){
                                 resultList.add(true);
                                 log.info(String.format("HORIZONTAL: %s == %s", dna[i].charAt(j), dna[i].charAt(j + 1)));
                             }
+                    }
+                    
+                    
+                }
+    
+                // Para hacer la validacion de igualdad vertical, se asegura que la posicion actual no sea la ultima fila
+                // Se valida que la siguiente posicion hacia abajo sea igual a la actual
+                if ((i != length - 1) && (dna[i].charAt(j) == dna[i + 1].charAt(j))) {
+    
+                    // Se valida que al menos existan tres filas mas hacia abajo
+                    // Se decide dejar las siguiente validaciones separadas por legibilidad del codigo
+                    if (i + 2 < length - 1) {
+    
+                        // Se completa la validacion vertical hacia abajo de 4 letras igual. (la actual, la siguiente y dos mas)
+                        if ((dna[i].charAt(j) == dna[i + 2].charAt(j)) && (dna[i].charAt(j) == dna[i + 3].charAt(j))) {
+                            resultList.add(true);
+                            log.info(String.format("VERTICAL: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j)));
                         }
                     }
                     
                 }
-                
-                if (i != length - 1) {
-                    
-                    if (dna[i].charAt(j) == dna[i + 1].charAt(j)) {
-                        if (i + 2 < length - 1) {
-                            if ((dna[i].charAt(j) == dna[i + 2].charAt(j)) && (dna[i].charAt(j) == dna[i + 3].charAt(j))) {
-                                resultList.add(true);
-                                log.info(String.format("VERTICAL: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j)));
-                            }
-                        }
-                    }
-                    
-                }
-                
-                
+    
+                // Para hacer las validaciones de igualdad oblicuas, se asegura que la posicion actual no sea la ultima fila ni la ultima posicion de la fila
                 if ((j != length - 1) && (i != length - 1)) {
-    
-                    if (dna[i].charAt(j) == dna[i + 1].charAt(j + 1)) {
-                        if ((i + 2 < length - 1) && (j + 2 < length - 1)) {
-                            if ((dna[i].charAt(j) == dna[i + 2].charAt(j + 2)) && (dna[i].charAt(j) == dna[i + 3].charAt(j + 3))) {
-                                resultList.add(true);
-                                log.info(String.format("OBLICUO POSITIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j + 1)));
-                            }
+                    
+                    // Se valida que existan al menos tres posiciones mas oblicuas hacia la derecha
+                    if ((i + 2 < length - 1) && (j + 2 < length - 1)) {
+                        
+                        //Se valida que existan cuatro letras iguales a la posicion actual de forma oblicua a la derecha
+                        if (
+                                (dna[i].charAt(j) == dna[i + 1].charAt(j + 1)) &&
+                                (dna[i].charAt(j) == dna[i + 2].charAt(j + 2)) &&
+                                        (dna[i].charAt(j) == dna[i + 3].charAt(j + 3))
+                        ) {
+                            resultList.add(true);
+                            log.info(String.format("OBLICUO POSITIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j + 1)));
                         }
                     }
     
-                    if (j != 0 && dna[i].charAt(j) == dna[i + 1].charAt(j - 1)) {
-                        if ((i + 2 < length - 1) && (j - 2 >= 1)) {
-                            if ((dna[i].charAt(j) == dna[i + 2].charAt(j - 2)) && (dna[i].charAt(j) == dna[i + 3].charAt(j - 3))) {
-                                resultList.add(true);
-                                log.info(String.format("OBLICUO NEGATIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j - 1)));
-                            }
+                    // Se valida que existan al menos tres posiciones mas oblicuas hacia la izquierda y que no sea la primera posicion de la fila
+                    if ((j != 0) && (i + 2 < length - 1) && (j - 2 >= 1)) {
+    
+                        //Se valida que existan cuatro letras iguales a la posicion actual de forma oblicua a la izquierda
+                        if (
+                                (dna[i].charAt(j) == dna[i + 1].charAt(j - 1)) &&
+                                (dna[i].charAt(j) == dna[i + 2].charAt(j - 2)) &&
+                                        (dna[i].charAt(j) == dna[i + 3].charAt(j - 3))
+                        ) {
+                            resultList.add(true);
+                            log.info(String.format("OBLICUO NEGATIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j - 1)));
                         }
                     }
+                    
                 }
                 
             }
         }
     
+        // Se almacena el registro de forma negativa y se responde con una excepcion para indicar que el ADN es humano
         saveRecord(buildAdnRecord(dna, false));
         throw new NoMutantException(ERROR_NO_MUTANTE);
     }
     
     @Override
     public StatsResponseDTO stats() {
-        Integer mutantDna = adnRepository.countAdnRecordsByResultEquals(true);
-        Integer humanDna = adnRepository.countAdnRecordsByResultEquals(false);
+        AtomicReference<Integer> mutantDna = new AtomicReference<>(0);
+        AtomicReference<Integer> humanDna = new AtomicReference<>(0);
+        
+        // Se hace un solo llamado a la BD y se valida registro por registro
+        // se hace para evitar que en momentos de alta demanda se hagan muchas peticiones a al BD
+        adnRepository.findAll().stream().forEach((record) -> {
+            if (record.getResult()){
+                mutantDna.updateAndGet(v -> v + 1);
+            } else if (!record.getResult()) {
+                humanDna.updateAndGet(v -> v + 1);
+            }
+        });
+        
         return StatsResponseDTO.builder()
-                .count_mutant_dna(mutantDna)
-                .count_human_dna(humanDna)
-                .ratio(mutantDna.doubleValue()/humanDna.doubleValue())
+                .count_mutant_dna(mutantDna.get())
+                .count_human_dna(humanDna.get())
+                .ratio(mutantDna.get().doubleValue()/ humanDna.get().doubleValue())
                 .build();
     }
     
     private void saveRecord(AdnRecord adnRecord) {
+        // Se guarda la entidad y si ya existe se deja el log, pero el usuario recibe una respuesta acorde con al validacion
         try {
             adnRepository.save(adnRecord);
         } catch (DuplicateKeyException ex) {
-            throw new MCRuntimeException(new MCError(
-                    HttpStatus.BAD_REQUEST, new ErrorDTO(
-                    ERROR_ADN_ALREADY_CHECKED_CODE,
-                    String.format(ERROR_ADN_ALREADY_CHECKED, adnRecord.getResult()),
-                    TYPE_E
-            )));
+            log.warn(String.format(ERROR_ADN_ALREADY_CHECKED, adnRecord.getResult()));
         }
     }
     
