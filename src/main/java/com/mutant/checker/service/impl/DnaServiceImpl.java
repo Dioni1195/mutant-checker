@@ -55,16 +55,6 @@ public class DnaServiceImpl implements DnaService {
         
         for (int i = 0; i < dna.length; i++) {
             
-            // La matriz debe ser cuadrada, se valida tamano de cada fila
-            if(dna[i].length() != dna.length) {
-                throw new MCRuntimeException(new MCError(
-                        HttpStatus.BAD_REQUEST, new ErrorDTO(
-                        ERROR_MATRIZ_NO_CUADRADA_CODE,
-                        String.format(ERROR_MATRIZ_NO_CUADRADA, i, dna[i].length()),
-                        TYPE_E
-                )));
-            }
-            
             // Se valida que la fila solo tenga los caracteres permitidos (A,T,C,G)
             if (!dna[i].matches(REGEX)){
                 throw new MCRuntimeException(new MCError(
@@ -75,7 +65,7 @@ public class DnaServiceImpl implements DnaService {
                 )));
             }
 
-            int length = dna.length;
+            int length = dna[i].length();
             for (int j = 0; j < length; j++) {
                 // Si se cumple el requerimiento de minimo dos dos filas con 4 letras igual, se retorna el resultado positivo
                 if (resultList.size() == 2) {

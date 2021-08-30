@@ -33,13 +33,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @ControllerAdvice
 @Slf4j
 public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandler {
-
-	@Override
-	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-		String error = MessageFormat.format("{0} parameter is missing", ex.getParameterName());
-		log.error(ex.getLocalizedMessage());
-		return buildResponseEntity(new MCError(BAD_REQUEST, new ErrorDTO(101002, error, TYPE_E)));
-	}
 	
 	@Override
 	protected ResponseEntity<Object> handleBindException(
@@ -66,16 +59,6 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
 	protected ResponseEntity<Object> handleNoMutantException(NoMutantException ex) {
 		log.error(ex.getLocalizedMessage());
 		return new ResponseEntity<>(ex.getNoMutant(), HttpStatus.FORBIDDEN);
-	}
-	
-	@ExceptionHandler(MissingRequestHeaderException.class)
-	protected ResponseEntity<Object> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
-		MCError error = new MCError(BAD_REQUEST, new ErrorDTO(101003,
-			ex.getHeaderName(),
-			TYPE_E
-		));
-		log.error(ex.getLocalizedMessage());
-		return buildResponseEntity(error);
 	}
 
 	@ExceptionHandler(Exception.class)
