@@ -1,4 +1,4 @@
-package com.mutant.checker.controller.customConstraints;
+package com.mutant.checker.controller.custom_constraints;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +15,8 @@ public class SquareMatrixValidator implements ConstraintValidator<SquareMatrix, 
 	@Override
 	public boolean isValid(String[] value, ConstraintValidatorContext context) {
 		
-		for (String record: value) {
-			if (record.length() != value.length)
+		for (String adnChain: value) {
+			if (adnChain.length() != value.length)
 				return false;
 		}
 		return true;

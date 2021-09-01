@@ -126,9 +126,10 @@ public class DnaServiceImpl implements DnaService {
                     }
                 }
     
-                // Se valida que existan al menos tres posiciones mas oblicuas hacia la izquierda y que no sea la primera posicion de la fila
+                // Se valida que no sea la primera posicion de la fila ni la ultima fila
                 if ((j != 0) && (i != length - 1)) {
                     
+                    //Se valida que existan al menos tres posiciones mas oblicuas hacia la izquierda
                     if ((i + 2 < length - 1) && (j - 2 >= 1)) {
         
                         //Se valida que existan cuatro letras iguales a la posicion actual de forma oblicua a la izquierda
@@ -158,10 +159,10 @@ public class DnaServiceImpl implements DnaService {
         
         // Se hace un solo llamado a la BD y se valida registro por registro
         // se hace para evitar que en momentos de alta demanda se hagan muchas peticiones a al BD
-        adnRepository.findAll().stream().forEach((record) -> {
-            if (record.getResult()){
+        adnRepository.findAll().stream().forEach(adnChain -> {
+            if (Boolean.TRUE.equals(adnChain.getResult())){
                 mutantDna.updateAndGet(v -> v + 1);
-            } else if (!record.getResult()) {
+            } else if (Boolean.FALSE.equals(!adnChain.getResult())) {
                 humanDna.updateAndGet(v -> v + 1);
             }
         });

@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DnaController.class)
-public class DnaControllerTest {
+class DnaControllerTest {
 	
 	public static final ObjectMapper mapper = new ObjectMapper();
 	private static final String DNA_URL = "/mutant/";

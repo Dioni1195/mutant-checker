@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class DnaServiceImplTest {
+class DnaServiceImplTest {
 	public static final ObjectMapper mapper = new ObjectMapper();
 	
 	@Autowired

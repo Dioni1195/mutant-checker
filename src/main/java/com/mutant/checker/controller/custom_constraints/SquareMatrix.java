@@ -1,4 +1,4 @@
-package com.mutant.checker.controller.customConstraints;
+package com.mutant.checker.controller.custom_constraints;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

@@ -1,8 +1,8 @@
 package com.mutant.checker.service.dto;
 
-import com.mutant.checker.controller.customConstraints.FirstOrder;
-import com.mutant.checker.controller.customConstraints.SecondOrder;
-import com.mutant.checker.controller.customConstraints.SquareMatrix;
+import com.mutant.checker.controller.custom_constraints.FirstOrder;
+import com.mutant.checker.controller.custom_constraints.SecondOrder;
+import com.mutant.checker.controller.custom_constraints.SquareMatrix;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
