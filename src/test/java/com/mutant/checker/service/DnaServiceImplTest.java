@@ -37,14 +37,63 @@ public class DnaServiceImplTest {
 	AdnRepository adnRepository;
 	
 	@Test
-	void checkDnaShouldOk() throws JsonProcessingException {
+	void checkDnaOblicuoPositivo() throws JsonProcessingException {
 		String[] request = new String[]{
-			"ATCGCA",
-			"CAGTAG",
-			"TTTGGG",
-			"AGGTGG",
+			"ACCGCA",
+			"CACTAG",
+			"TTACGG",
+			"AGGACC",
 			"CGCCTG",
-			"ACAAAA"
+			"ACTGAA"
+		};
+		when(adnRepository.save(any(AdnRecord.class))).thenReturn(buildAdnRecord(true, request));
+		
+		boolean result = dnaService.isMutant(request);
+		
+		assertTrue(result);
+	}
+	
+	@Test
+	void checkDnaCoincidencePoint() throws JsonProcessingException {
+		String[] request = new String[]{
+			"AAAA",
+			"CACA",
+			"TTAA",
+			"AGGA"
+		};
+		when(adnRepository.save(any(AdnRecord.class))).thenReturn(buildAdnRecord(true, request));
+		
+		boolean result = dnaService.isMutant(request);
+		
+		assertTrue(result);
+	}
+	
+	@Test
+	void checkFullMutant() throws JsonProcessingException {
+		String[] request = new String[]{
+			"AAAA",
+			"AAAA",
+			"AAAA",
+			"AAAA"
+		};
+		when(adnRepository.save(any(AdnRecord.class))).thenReturn(buildAdnRecord(true, request));
+		
+		boolean result = dnaService.isMutant(request);
+		
+		assertTrue(result);
+	}
+	
+	@Test
+	void checkAdnAllAtSameTime() throws JsonProcessingException {
+		String[] request = new String[]{
+			"ATAATCGA",
+			"AAAGCGGA",
+			"GGCTGGGT",
+			"CATAAAAG",
+			"ATAAACGA",
+			"GAGACAGA",
+			"ACCAGGAT",
+			"ATACTTTG"
 		};
 		when(adnRepository.save(any(AdnRecord.class))).thenReturn(buildAdnRecord(true, request));
 		

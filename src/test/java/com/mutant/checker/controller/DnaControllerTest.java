@@ -55,7 +55,7 @@ public class DnaControllerTest {
 	void checkDnaErrorDnaNull() throws Exception {
 		mockMvc.perform(post(DNA_URL)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.writeValueAsString(buildRequestCheckDna(null)))
+			.content(mapper.writeValueAsString(CheckDnaRequestDTO.builder().build()))
 		)
 			.andExpect(status().isBadRequest())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
