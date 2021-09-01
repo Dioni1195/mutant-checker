@@ -162,7 +162,7 @@ public class DnaServiceImpl implements DnaService {
         adnRepository.findAll().stream().forEach(adnChain -> {
             if (Boolean.TRUE.equals(adnChain.getResult())){
                 mutantDna.updateAndGet(v -> v + 1);
-            } else if (Boolean.FALSE.equals(!adnChain.getResult())) {
+            } else if (Boolean.FALSE.equals(adnChain.getResult())) {
                 humanDna.updateAndGet(v -> v + 1);
             }
         });
