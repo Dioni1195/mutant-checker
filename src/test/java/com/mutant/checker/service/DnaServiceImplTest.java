@@ -114,6 +114,28 @@ class DnaServiceImplTest {
 	}
 	
 	@Test
+	void statsZeroDividedFor() throws JsonProcessingException {
+		when(adnRepository.findAll()).thenReturn(buildFindZeroMutantAllResponse());
+		
+		StatsResponseDTO result = dnaService.stats();
+		
+		assertEquals(0, result.getRatio());
+		assertEquals(0, result.getCount_mutant_dna());
+		assertEquals(2, result.getCount_human_dna());
+	}
+	
+	@Test
+	void statsAnyDividedForZero() throws JsonProcessingException {
+		when(adnRepository.findAll()).thenReturn(buildFindZeroHumanAllResponse());
+		
+		StatsResponseDTO result = dnaService.stats();
+		
+		assertEquals(1.0/0, result.getRatio());
+		assertEquals(4, result.getCount_mutant_dna());
+		assertEquals(0, result.getCount_human_dna());
+	}
+	
+	@Test
 	void checkDnaErrorSizeMatrix() throws JsonProcessingException {
 		String[] request = new String[]{
 			"ATCGCA",
@@ -233,6 +255,26 @@ class DnaServiceImplTest {
 		
 		return listAdn;
 	}
+	
+	private List<AdnRecord> buildFindZeroMutantAllResponse() throws JsonProcessingException {
+		List<AdnRecord> listAdn = new ArrayList<>();
+
+		listAdn.add(buildAdnRecord(false, new String[]{"TEST5"}));
+		listAdn.add(buildAdnRecord(false, new String[]{"TEST6"}));
+		
+		return listAdn;
+	}
+	private List<AdnRecord> buildFindZeroHumanAllResponse() throws JsonProcessingException {
+		List<AdnRecord> listAdn = new ArrayList<>();
+		
+		listAdn.add(buildAdnRecord(true, new String[]{"TEST1"}));
+		listAdn.add(buildAdnRecord(true, new String[]{"TEST2"}));
+		listAdn.add(buildAdnRecord(true, new String[]{"TEST3"}));
+		listAdn.add(buildAdnRecord(true, new String[]{"TEST4"}));
+		
+		return listAdn;
+	}
+	
 	
 	AdnRecord buildAdnRecord(Boolean result, String[] adn) throws JsonProcessingException {
 		return AdnRecord.builder()
