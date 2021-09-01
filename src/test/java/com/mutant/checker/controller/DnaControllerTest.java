@@ -65,19 +65,6 @@ public class DnaControllerTest {
 	}
 	
 	@Test
-	void checkDnaErrorDnaEmpty() throws Exception {
-		mockMvc.perform(post(DNA_URL)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.writeValueAsString(buildRequestCheckDna(new String[]{})))
-		)
-			.andExpect(status().isBadRequest())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.idError").value("101003"))
-			.andExpect(jsonPath("$.descError").value("Object Name: checkDnaRequestDTO, Field: dna, Message: must not be empty"))
-			.andReturn();
-	}
-	
-	@Test
 	void statsShouldReturnOk() throws Exception {
 		when(dnaService.stats()).thenReturn(buildResponseStats(40, 100));
 		

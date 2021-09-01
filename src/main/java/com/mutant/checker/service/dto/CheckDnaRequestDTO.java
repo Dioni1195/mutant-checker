@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.GroupSequence;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -19,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @GroupSequence({CheckDnaRequestDTO.class, FirstOrder.class, SecondOrder.class})
 public class CheckDnaRequestDTO {
     @NotNull(groups = FirstOrder.class)
-    @NotEmpty(groups = FirstOrder.class)
     @SquareMatrix(groups = SecondOrder.class)
     private String[] dna;
 }
