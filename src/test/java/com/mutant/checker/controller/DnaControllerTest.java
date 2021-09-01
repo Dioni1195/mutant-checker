@@ -60,7 +60,7 @@ public class DnaControllerTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.idError").value("101003"))
-			.andExpect(jsonPath("$.descError").value("Object Name: checkDnaRequestDTO, Field: dna, Message: must not be empty"))
+			.andExpect(jsonPath("$.descError").value("Object Name: checkDnaRequestDTO, Field: dna, Message: must not be null"))
 			.andReturn();
 	}
 	
