@@ -23,11 +23,14 @@ https://mutant-checker-meli.herokuapp.com/
 Para realizar la validación de un ADN se creó un servicio con las siguientes especificaciones
 1. **Verbo**: _POST_
 2. **URL**:  https://mutant-checker-meli.herokuapp.com/mutant/
-3. **Cuerpo**:
+3. **Cuerpo**: 
 
 | Atributo | Tipo |
  | ------- | ----- |
-| dna | String[] |
+| dna | String[] | 
+-  Cada String solo puede contener (ACTG)
+- El número de filas debe ser igual al número de carácteres por cada String (Matriz cuadrada NxN)
+- El número minímo de filas debe ser 4
 
 4. **Respuesta**:
 
