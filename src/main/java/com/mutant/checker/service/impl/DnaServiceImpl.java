@@ -68,7 +68,7 @@ public class DnaServiceImpl implements DnaService {
             int length = dna[i].length();
             for (int j = 0; j < length; j++) {
                 // Si se cumple el requerimiento de minimo dos dos filas con 4 letras igual, se retorna el resultado positivo
-                if (resultList.size() == 2) {
+                if (resultList.size() > 1) {
                     saveRecord(buildAdnRecord(dna, true));
                     return true;
                 }
@@ -124,21 +124,23 @@ public class DnaServiceImpl implements DnaService {
                             log.info(String.format("OBLICUO POSITIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j + 1)));
                         }
                     }
+                }
     
-                    // Se valida que existan al menos tres posiciones mas oblicuas hacia la izquierda y que no sea la primera posicion de la fila
-                    if ((j != 0) && (i + 2 < length - 1) && (j - 2 >= 1)) {
-    
+                // Se valida que existan al menos tres posiciones mas oblicuas hacia la izquierda y que no sea la primera posicion de la fila
+                if ((j != 0) && (i != length - 1)) {
+                    
+                    if ((i + 2 < length - 1) && (j - 2 >= 1)) {
+        
                         //Se valida que existan cuatro letras iguales a la posicion actual de forma oblicua a la izquierda
                         if (
                                 (dna[i].charAt(j) == dna[i + 1].charAt(j - 1)) &&
-                                (dna[i].charAt(j) == dna[i + 2].charAt(j - 2)) &&
+                                        (dna[i].charAt(j) == dna[i + 2].charAt(j - 2)) &&
                                         (dna[i].charAt(j) == dna[i + 3].charAt(j - 3))
                         ) {
                             resultList.add(true);
                             log.info(String.format("OBLICUO NEGATIVO: %s == %s", dna[i].charAt(j), dna[i + 1].charAt(j - 1)));
                         }
                     }
-                    
                 }
                 
             }
